@@ -7,7 +7,7 @@ import recipeModel from "./recipeModel.js";
 
 
 const createRecipe = async (req, res, next) => {
-  const { title, category } = req.body;
+  const { title, category,coverImage } = req.body;
 
 //   console.log("Files", req.files);
 
