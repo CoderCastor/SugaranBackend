@@ -1,51 +1,42 @@
 
 import createHttpError from "http-errors";
-
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from 'node:fs'
 
 import recipeModel from "./recipeModel.js";
 
+const __filename = fileURLToPath(import.meta.url); // Get current file path
+const __dirname = path.dirname(__filename); // Get directory name 
 
+import cloudinary from "../config/cloudinary.js";
 
 const createRecipe = async (req, res, next) => {
-  const { title, category,coverImage } = req.body;
+  const { title, category,recipeImage } = req.body;
 
-//   console.log("Files", req.files);
+  // console.log("Files", req.files);
 
-//   const files = req.files;
+  const files = req.files;
 
-//   const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
-//   const fileName = files.coverImage[0].filename;
-//   const filePath = path.resolve(
-//     __dirname,
-//     "../../public/data/uploads",
-//     fileName
-//   );
+  const recipeImageMimeType = files.recipeImage[0].mimetype.split("/").at(-1);
+  const fileName = files.recipeImage[0].filename;
+  const filePath = path.resolve(
+    __dirname,
+    "../../public/data/uploads",
+    fileName
+  );
+
+  // console.log(coverImageMimeType,"  ",fileName,"   ",filePath)
 
   try {
     //for cover image
-    // const uploadResult = await cloudinary.uploader.upload(filePath, {
-    //   filename_override: fileName,
-    //   folder: "book-covers",
-    //   format: coverImageMimeType,
-    // });
+    const uploadResult = await cloudinary.uploader.upload(filePath, {
+      filename_override: fileName,
+      folder: "recipe-images",
+      format: recipeImageMimeType,
+    });
 
-    //for pdf
-    // const bookFileName = files.file[0].filename;
-    // const bookFilePath = path.resolve(
-    //   __dirname,
-    //   "../../public/data/uploads",
-    //   bookFileName
-    // );
-
-    // const bookFileUploadResult = await cloudinary.uploader.upload(
-    //   bookFilePath,
-    //   {
-    //     resource_type: "raw",
-    //     filename_override: bookFileName,
-    //     folder: "book-Pdfs",
-    //     format: "pdf",
-    //   }
-    // );
+    console.log(uploadResult)
 
     //type cast
     const _req = req;
@@ -53,13 +44,12 @@ const createRecipe = async (req, res, next) => {
       title,
       category,
       chef: _req.userId,
-      coverImage:"uploading"
-    //   coverImage: uploadResult.secure_url,
+      recipeImageUrl:uploadResult.secure_url
+
     });
 
     //delete Temp files
-    // await fs.promises.unlink(filePath);
-    // await fs.promises.unlink(bookFilePath);
+    await fs.promises.unlink(filePath);
 
     res.status(201).json({
       id: newRecipe._id,

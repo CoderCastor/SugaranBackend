@@ -9,7 +9,7 @@ const recipeSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    coverImage:{
+    recipeImageUrl:{
         type:String,
         
     },
@@ -17,7 +17,6 @@ const recipeSchema = new mongoose.Schema({
         type:String,
         required: true
     }
-
 
 },{timestamps: true})
 
